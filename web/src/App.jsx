@@ -9,7 +9,42 @@ const TABS = [
 ]
 
 export default function App() {
+  // Get the password from Cloudflare environment variables
+  const EXPECTED_PASSWORD = import.meta.env.VITE_DASHBOARD_PASSWORD || 'admin'
+  const [isAuthed, setIsAuthed] = useState(false)
+  const [passwordInput, setPasswordInput] = useState('')
   const [tab, setTab] = useState('lives')
+  const [error, setError] = useState('')
+
+  const handleLogin = (e) => {
+    e.preventDefault()
+    if (passwordInput === EXPECTED_PASSWORD) {
+      setIsAuthed(true)
+      setError('')
+    } else {
+      setError('Incorrect password')
+    }
+  }
+
+  if (!isAuthed) {
+    return (
+      <div className="login-screen">
+        <form className="login-box" onSubmit={handleLogin}>
+          <h1>🔒 YT Live Manager</h1>
+          <p>Enter dashboard password</p>
+          <input
+            type="password"
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
+            placeholder="Password..."
+            autoFocus
+          />
+          {error && <span className="error">{error}</span>}
+          <button type="submit">Unlock</button>
+        </form>
+      </div>
+    )
+  }
 
   return (
     <div className="app">
